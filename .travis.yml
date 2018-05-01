@@ -12,6 +12,7 @@ addons:
     - libflac++-dev
     - libjack-dev
     - libmpg123-dev
+    - libpulse-dev
 
 before_script:
   - mkdir build
