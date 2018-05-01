@@ -3,6 +3,15 @@ language: cpp
 compiler:
   - gcc
   - clang
+  
+addons:
+  apt:
+    packages:
+    - cmake
+    - libasound2-dev
+    - libflac++-dev
+    - libjack-dev
+    - libmpg123-dev
 
 before_script:
   - mkdir build
