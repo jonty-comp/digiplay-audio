@@ -11,17 +11,13 @@ namespace Audio {
 	class Component;
     class ComponentAudio;
     class ComponentMonitor;
+
 	class Input;
     class InputFile;
-	class InputFileRaw;
-    class InputFlac;
-	class InputWav;
-	class InputMp3;
-	class InputDsp;
+    class InputDsp;
 	
 	class Output;
     class OutputFile;
-	class OutputFileRaw;
 	class OutputDsp;
 
 	class Process;
