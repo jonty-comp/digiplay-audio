@@ -36,7 +36,12 @@ set(AUDIOLIB_HEADERS    AudioPacket.h
                         Thread.h
     )
 
+find_package (Threads)
+
 add_library(dpsaudio SHARED ${AUDIOLIB_SOURCES})
+target_link_libraries (dpsaudio ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(dpsaudio ${CMAKE_DL_LIBS})
+
 set_target_properties(dpsaudio PROPERTIES VERSION ${VERSION})
 install(TARGETS dpsaudio
     RUNTIME DESTINATION bin OPTIONAL
