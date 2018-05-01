@@ -51,7 +51,7 @@ void InputFile::load(string filename, long start_smpl, long end_smpl) {
     // Dynmically load the required shared library for this file format.
     dlHandle = dlopen(soName.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!dlHandle) {
-        cerr << "No such module: " << soName << endl;
+        cerr << "Module Error in " << soName << ": " << dlerror() << endl;
         throw 0;
     }
 
