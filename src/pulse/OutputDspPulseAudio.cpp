@@ -28,7 +28,20 @@ namespace Audio {
     };
 
     OutputDspPulseAudio::OutputDspPulseAudio(string channel) {
-        initialise(channel);
+        ss.format = PA_SAMPLE_S16LE;
+        ss.channels = 2;
+        ss.rate = 44100;
+        s = pa_simple_new(
+            NULL,               // Use the default server.
+            channel.c_str(),    // Our application's name.
+            PA_STREAM_PLAYBACK, 
+            NULL,               // Use the default device.
+            "Music",            // Description of our stream.
+            &ss,                // Our sample format.
+            NULL,               // Use default channel map
+            NULL,               // Use default buffering attributes.
+            NULL                // Ignore error code.
+        );
     }
 
     OutputDspPulseAudio::~OutputDspPulseAudio() {
@@ -95,27 +108,4 @@ namespace Audio {
         }
         delete buffer;
     }
-
-    void OutputDspPulseAudio::initialise(string device) {
-        ss.format = PA_SAMPLE_S16LE;
-        ss.channels = 2;
-        ss.rate = 44100;
-        s = pa_simple_new(
-            NULL,               // Use the default server.
-            device.c_str(),     // Our application's name.
-            PA_STREAM_PLAYBACK, 
-            NULL,               // Use the default device.
-            "Music",            // Description of our stream.
-            &ss,                // Our sample format.
-            NULL,               // Use default channel map
-            NULL,               // Use default buffering attributes.
-            NULL                // Ignore error code.
-        );
-        // Create buffer synchronisation object
-        sync = new pthread_cond_t;
-        pthread_cond_init(sync, NULL);
-        bufReady = 0;
-
-    }
-
 }

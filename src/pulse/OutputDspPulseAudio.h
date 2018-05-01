@@ -15,13 +15,9 @@ namespace Audio {
             virtual void threadExecute();
 
         private:
-            void initialise(string device);
-
             pa_simple *s;
             pa_sample_spec ss;
 
-            volatile int bufReady;
             enum STATE audioState;
-            pthread_cond_t *sync;
     };
 };
