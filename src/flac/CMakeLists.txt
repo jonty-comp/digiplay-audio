@@ -8,7 +8,7 @@ find_library(FLACPP_LIBRARY NAMES FLAC++)
 find_package_handle_standard_args(FLACPP DEFAULT_MSG FLACPP_LIBRARY FLACPP_INCLUDE_DIR)
 
 add_library(dpsaudio-flac SHARED ${AUDIOLIB_FLAC_SOURCES})
-target_link_libraries(dpsaudio-flac ${FLAC_LIBRARY})
+target_link_libraries(dpsaudio-flac ${FLACPP_LIBRARY})
 set_target_properties(dpsaudio-flac PROPERTIES VERSION ${VERSION})
 install(TARGETS dpsaudio-flac
     RUNTIME DESTINATION bin OPTIONAL
