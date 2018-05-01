@@ -22,11 +22,13 @@ OutputFile::OutputFile(string filename) {
     else {
         soName = "libdpsaudio-raw.so";
     }
+    
     dlHandle = dlopen(soName.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!dlHandle) {
-        cerr << "No such module: " << soName << endl;
+        cerr << "Module Error in " << soName << ": " << dlerror() << endl;
         throw 0;
     }
+
     OutputFileSO_Entry entry = (OutputFileSO_Entry)dlsym(dlHandle, OUTPUT_SO_SYM);
     if (!entry) {
         cerr << "No entry point in module: " << soName << endl;

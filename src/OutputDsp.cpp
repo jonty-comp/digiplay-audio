@@ -39,9 +39,10 @@ namespace Audio {
             dlHandle = dlopen(soName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         }
         if (!dlHandle) {
-            cerr << "No such module: " << soName << endl;
+            cerr << "Module Error in " << soName << ": " << dlerror() << endl;
             throw 0;
         }
+        
         OutputDspSO_Entry entry
                         = (OutputDspSO_Entry)dlsym(dlHandle, OUTPUT_SO_SYM);
         if (!entry) {
