@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project(libdpsaudio)
 set(VERSION 0.99)
+include(FindPackageHandleStandardArgs)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/src ${CMAKE_MODULE_PATH})
 

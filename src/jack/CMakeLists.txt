@@ -1,6 +1,10 @@
 set(AUDIOLIB_JACK_SOURCES OutputDspJack.cpp)
 
-find_package(Jack)
+find_path(JACK_INCLUDE_DIR NAMES jack/jack.h)
+  
+find_library(JACK_LIBRARY NAMES jack)
+
+find_package_handle_standard_args(Jack DEFAULT_MSG JACK_LIBRARY JACK_INCLUDE_DIR)
 
 add_library(dpsaudio-jack SHARED ${AUDIOLIB_JACK_SOURCES})
 target_link_libraries(dpsaudio-jack ${JACK_LIBRARY})
