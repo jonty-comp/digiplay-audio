@@ -4,7 +4,7 @@ project(libdpsaudio)
 include(FindPackageHandleStandardArgs)
 
 execute_process(
-  COMMAND git describe --always --dirty
+  COMMAND git describe --always --tags --dirty
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE VERSION
   OUTPUT_STRIP_TRAILING_WHITESPACE
