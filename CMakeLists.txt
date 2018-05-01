@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 
 project(libdpsaudio)
-set(VERSION 0.99)
 include(FindPackageHandleStandardArgs)
+
+execute_process(
+  COMMAND git describe --always --dirty
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/src ${CMAKE_MODULE_PATH})
 
