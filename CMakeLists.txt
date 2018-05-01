@@ -27,6 +27,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 option(ENABLE_FLAC "Enable FLAC audio support." ON)
 option(ENABLE_MP3 "Enable MP3 audio support." ON)
 
+option(ENABLE_PULSE "Enable PulseAudio audio support." ON)
 option(ENABLE_JACK "Enable JACK audio support." ON)
 option(ENABLE_ALSA "Enable ALSA audio support." ON)
 option(ENABLE_OSS "Enable OSS audio support." ON)
