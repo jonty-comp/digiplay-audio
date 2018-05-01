@@ -17,12 +17,10 @@ add_definitions(-DVERSION="\\"${VERSION}\\"")
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-include(CMakeDependentOption)
+option(ENABLE_FLAC "Enable FLAC audio support." ON)
+option(ENABLE_MP3 "Enable MP3 audio support." ON)
 
-option(ENABLE_FLAC "Enable FLAC audio support." OFF)
-option(ENABLE_MP3 "Enable MP3 audio support." OFF)
-
-option(ENABLE_JACK "Enable JACK audio support." OFF)
+option(ENABLE_JACK "Enable JACK audio support." ON)
 option(ENABLE_ALSA "Enable ALSA audio support." ON)
 option(ENABLE_OSS "Enable OSS audio support." ON)
 
