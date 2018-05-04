@@ -11,27 +11,35 @@ using std::endl;
 OutputFile::OutputFile(string filename) {
     this->filename = filename;
     unsigned int len = filename.size();
-    string soName = "";
+    string libName = "";
+
+    #ifdef _WIN32
+        const string libExt = ".dll";
+    #elif __APPLE__
+        const string libExt = ".dylib";
+    #elif __linux__
+        const string libExt = ".so";
+    #endif
 
     if (filename.substr(len-4,4) == "flac") {
-        soName = "libdpsaudio-flac.so";
+        libName = "libdpsaudio-flac";
     }
     else if (filename.substr(len-3,3) == "mp3") {
-        soName = "libdpsaudio-mp3.so";
+        libName = "libdpsaudio-mp3";
     }
     else {
-        soName = "libdpsaudio-raw.so";
+        libName = "libdpsaudio-raw";
     }
     
-    dlHandle = dlopen(soName.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    dlHandle = dlopen((libName+libExt).c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!dlHandle) {
-        cerr << "Module Error in " << soName << ": " << dlerror() << endl;
+        cerr << "Module Error in " << libName << ": " << dlerror() << endl;
         throw 0;
     }
 
     OutputFileSO_Entry entry = (OutputFileSO_Entry)dlsym(dlHandle, OUTPUT_SO_SYM);
     if (!entry) {
-        cerr << "No entry point in module: " << soName << endl;
+        cerr << "No entry point in module: " << libName << endl;
         dlclose(dlHandle);
         throw 0;
     }
