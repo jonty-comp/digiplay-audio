@@ -19,8 +19,7 @@ addons:
     - libpulse-dev
 
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cmake flac jack mpg123 pulseaudio; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install flac jack mpg123 pulseaudio; fi
   - mkdir build && cd build
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DENABLE_ALSA=no -DENABLE_OSS=no -DENABLE_FLAC=no ..; else cmake ..; fi
 
