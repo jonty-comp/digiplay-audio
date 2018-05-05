@@ -4,13 +4,8 @@ version: '{build}'
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
 image: Visual Studio 2017
 
-environment:
-  matrix:
-    - MINGW_DIR: MinGW
-    - MINGW_DIR: mingw-w64
-
 before_build:
-- set Path=%CD%\%MINGW_DIR%\bin;%Path%
+- set Path=C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\bin;%Path%
 - g++ --version
 - mingw32-make --version
 - cmake --version
