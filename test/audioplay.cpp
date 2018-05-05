@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	InputFile* filereader1 = new InputFile();
     ProcessMixer* mixer = new ProcessMixer();
 	// Create a DSP output
-	OutputDsp* player = new OutputDsp("pulse:Digiplay");
+	OutputDsp* player = new OutputDsp("jack:Digiplay");
 	
 	// Connect everything up
     filereader1->load(string(argv[1]),0,441000000);

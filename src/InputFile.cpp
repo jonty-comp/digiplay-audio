@@ -35,30 +35,38 @@ InputFile::~InputFile() {
 void InputFile::load(string filename, long start_smpl, long end_smpl) {
     if (filename == "") return;
     unsigned int len = filename.size();
-    string soName = "";
+    string libName = "";
+
+    #ifdef _WIN32
+        const string libExt = ".dll";
+    #elif __APPLE__
+        const string libExt = ".dylib";
+    #elif __linux__
+        const string libExt = ".so";
+    #endif
 
     // Determine file type from extension
     if (filename.substr(len-5,5) == ".flac") {
-        soName = "libdpsaudio-flac.so";
+        libName = "libdpsaudio-flac";
     }
     else if (filename.substr(len-4,4) == ".mp3") {
-        soName = "libdpsaudio-mp3.so";
+        libName = "libdpsaudio-mp3";
     }
     else {
-        soName = "libdpsaudio-raw.so";
+        libName = "libdpsaudio-raw";
     }
 
     // Dynmically load the required shared library for this file format.
-    dlHandle = dlopen(soName.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    dlHandle = dlopen((libName+libExt).c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (!dlHandle) {
-        cerr << "Module Error in " << soName << ": " << dlerror() << endl;
+        cerr << "Module Error in " << libName << ": " << dlerror() << endl;
         throw 0;
     }
 
     // Retrieve the library handle for creating class instance.
     InputFileSO_Entry entry = (InputFileSO_Entry)dlsym(dlHandle, INPUT_SO_SYM);
     if (!entry) {
-        cerr << "No entry point in module: " << soName << endl;
+        cerr << "No entry point in module: " << libName << endl;
         dlclose(dlHandle);
         throw 0;
     }

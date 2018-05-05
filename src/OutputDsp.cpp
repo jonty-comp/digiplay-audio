@@ -24,29 +24,37 @@ namespace Audio {
      * @param   channel     <type>:<DSP device to use>
      */
     OutputDsp::OutputDsp(string channel) {
+        #ifdef _WIN32
+            const string libExt = ".dll";
+        #elif __APPLE__
+            const string libExt = ".dylib";
+        #elif __linux__
+            const string libExt = ".so";
+        #endif
+
         int o = channel.find(":");
         if (o < 0) {
             cerr << "Invalid channel (no type specifier): " << channel << endl;
             throw 0;
         }
-        string soName = "libdpsaudio-" + channel.substr(0, o) + ".so";
+        string libName = "libdpsaudio-" + channel.substr(0, o) + libExt;
         deviceName = channel.substr(o+1);
 
         // Try $DPSDIR/modules first, then LD_LIBRARY_PATH search..
-        string tmpName = soName;
+        string tmpName = libName;
         dlHandle = dlopen(tmpName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (!dlHandle) {
-            dlHandle = dlopen(soName.c_str(), RTLD_NOW | RTLD_GLOBAL);
+            dlHandle = dlopen(libName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         }
         if (!dlHandle) {
-            cerr << "Module Error in " << soName << ": " << dlerror() << endl;
+            cerr << "Module Error in " << libName << ": " << dlerror() << endl;
             throw 0;
         }
         
         OutputDspSO_Entry entry
                         = (OutputDspSO_Entry)dlsym(dlHandle, OUTPUT_SO_SYM);
         if (!entry) {
-            cerr << "No entry point function in module: " << soName << endl;
+            cerr << "No entry point function in module: " << libName << endl;
             dlclose(dlHandle);
             throw 0;
         }
