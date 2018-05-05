@@ -2,7 +2,11 @@ set(AUDIOLIB_MP3_SOURCES InputMp3.cpp)
 
 find_path(MPG123_INCLUDE_DIR mpg123.h)
 
-find_library(MPG123_LIBRARIES NAMES mpg123 mpg123-0)
+if(WIN32)
+    find_library(MPG123_LIBRARIES NAMES libmpg123)
+else(WIN32)
+    find_library(MPG123_LIBRARIES NAMES mpg123 mpg123-0)
+endif(WIN32)
 
 find_package_handle_standard_args(MPG123 DEFAULT_MSG MPG123_LIBRARIES MPG123_INCLUDE_DIR)
 

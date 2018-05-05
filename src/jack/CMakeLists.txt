@@ -1,7 +1,13 @@
 set(AUDIOLIB_JACK_SOURCES OutputDspJack.cpp)
 
-find_path(JACK_INCLUDE_DIR NAMES jack/jack.h)  
-find_library(JACK_LIBRARY NAMES jack)
+find_path(JACK_INCLUDE_DIR NAMES jack/jack.h)
+
+if(WIN32)
+    find_library(JACK_LIBRARY NAMES jack2)
+else(WIN32)
+    find_library(JACK_LIBRARY NAMES jack)
+endif(WIN32)
+    
 find_package_handle_standard_args(Jack DEFAULT_MSG JACK_LIBRARY JACK_INCLUDE_DIR)
 
 find_package (Threads)
