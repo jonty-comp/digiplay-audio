@@ -4,6 +4,11 @@ version: '{build}'
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
 image: Visual Studio 2017
 
+environment:
+  matrix:
+    - MINGW_DIR: mingw64
+    - MINGW_DIR: mingw32
+
 before_build:
 - set Path=%CD%\%MINGW_DIR%\bin;%Path%
 - g++ --version
