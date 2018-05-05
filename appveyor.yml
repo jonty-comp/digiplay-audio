@@ -28,7 +28,7 @@ install:
   - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
 
 before_build:
-  - cmake . -Bbuild -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DENABLE_ALSA=no -DENABLE_FLAC=no -DENABLE_MP3=no -DENABLE_JACK=no -DENABLE_PULSE=no -DENABLE_OSS=n
+  - cmake . -Bbuild -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DENABLE_ALSA=no -DENABLE_FLAC=no -DENABLE_MP3=no -DENABLE_JACK=no -DENABLE_PULSE=no -DENABLE_OSS=n -DCMAKE_SH=CMAKE_SH-NOTFOUND
 
 build_script:
   - cmake --build build --use-stderr --target all --
