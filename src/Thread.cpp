@@ -72,7 +72,7 @@ void Thread::threadExecute() {
 void Thread::threadSend(int m) {
 	pthread_mutex_lock(&t_messages_mutex);
 
-	if (pthread_self() == threadId) {
+	if (pthread_equal(pthread_self(), threadId)) {
 		m *= -1;
 	}
 	t_messages.push_back(m);
@@ -85,7 +85,7 @@ bool Thread::threadReceive(int m) {
 	
 	if (t_messages.size() > 0) {
 		int t = 1;
-		if (pthread_self() != threadId) {
+		if (!pthread_equal(pthread_self(), threadId)) {
 			t = -1;
 		}
 		for (unsigned int i = 0; i < t_messages.size(); i++) {
