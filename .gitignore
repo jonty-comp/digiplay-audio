@@ -1,2 +1,5 @@
 build/*
 test/*.o
+
+# Visual Studio files
+.vs/
