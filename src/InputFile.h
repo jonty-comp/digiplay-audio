@@ -18,7 +18,7 @@ class Audio::InputFile : public Audio::Input {
 
         virtual void load(string filename, long start_smpl, long end_smpl);
 
-        virtual void getAudio(AudioPacket* audioData);
+        virtual void getAudio(Audio::AudioPacket* audioData);
         /// Changes to STATE_PLAY
         virtual void play();
         /// Changes to STATE_STOP

@@ -17,7 +17,7 @@ class Audio::Output : public virtual Audio::ComponentAudio {
 
     protected:
         /// Get audio packet
-        virtual void getAudio(AudioPacket* audioData);
+        virtual void getAudio(Audio::AudioPacket* audioData);
         virtual void receiveMessage(PORT inPort, MESSAGE message) = 0;
         virtual void onPatch(PORT localPort) = 0;
         virtual void onUnpatch(PORT localPort) = 0;

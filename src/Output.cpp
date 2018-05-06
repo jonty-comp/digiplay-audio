@@ -5,7 +5,7 @@ Output::~Output() {
 
 }
 
-void Output::getAudio(AudioPacket* audioData) {
+void Output::getAudio(Audio::AudioPacket* audioData) {
     return;
 }
 

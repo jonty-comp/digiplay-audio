@@ -100,7 +100,7 @@ void InputFile::load(string filename, long start_smpl, long end_smpl) {
 /**
  * Pass-through routine for retrieving audio.
  */
-void InputFile::getAudio(AudioPacket * audioData) {
+void InputFile::getAudio(Audio::AudioPacket * audioData) {
     if (pImpl) {
         pImpl->getAudio(audioData);
     }
