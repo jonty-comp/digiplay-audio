@@ -45,7 +45,7 @@ endif (NOT CMAKE_USE_PTHREADS_INIT)
 if (WIN32)
     find_package(dlfcn-win32 REQUIRED)
     set(CMAKE_DL_LIBS dlfcn-win32::dl)
-endif (W
+endif (WIN32)
 
 if (NOT APPLE)
     if (NOT CMAKE_DL_LIBS)
