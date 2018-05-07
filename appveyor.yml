@@ -32,7 +32,7 @@ install:
   - c:\tools\vcpkg\vcpkg integrate install
 
 before_build:
-  - cmake . -Bbuild -G "%GENERATOR%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_SH=CMAKE_SH-NOTFOUND
+  - cmake . -Bbuild -G "%GENERATOR%" -DVCPKG_TARGET_TRIPLET=%PLATFORM%-windows -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_SH=CMAKE_SH-NOTFOUND
 
 build_script:
   - cmake --build build --use-stderr --target all --
