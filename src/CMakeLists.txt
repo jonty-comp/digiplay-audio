@@ -45,11 +45,13 @@ endif (NOT CMAKE_USE_PTHREADS_INIT)
 if (WIN32)
     find_package(dlfcn-win32 REQUIRED)
     set(CMAKE_DL_LIBS dlfcn-win32::dl)
-endif (WIN32)
+endif (W
 
-if (NOT CMAKE_DL_LIBS)
-	message(FATAL_ERROR "dlfcn support is required for libdpsaudio.")
-endif (NOT CMAKE_DL_LIBS)
+if (NOT APPLE)
+    if (NOT CMAKE_DL_LIBS)
+        message(FATAL_ERROR "dlfcn support is required for libdpsaudio.")
+    endif (NOT CMAKE_DL_LIBS)
+endif (NOT APPLE)
 
 add_library(dpsaudio SHARED ${AUDIOLIB_SOURCES})
 target_link_libraries (dpsaudio ${CMAKE_THREAD_LIBS_INIT})
