@@ -23,12 +23,16 @@ environment:
       PLATFORM: x64
       BUILD_TYPE: Release
 
+cache: c:\tools\vcpkg\installed\
+
 install:
   - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
   - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
+  - c:\tools\vcpkg\vcpkg install dlfcn-win32:%PLATFORM%-windows pthreads:%PLATFORM%-windows
+  - c:\tools\vcpkg\vcpkg integrate install
 
 before_build:
-  - cmake . -Bbuild -G "%GENERATOR%" -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DENABLE_ALSA=no -DENABLE_FLAC=no -DENABLE_MP3=no -DENABLE_JACK=no -DENABLE_PULSE=no -DENABLE_OSS=n -DCMAKE_SH=CMAKE_SH-NOTFOUND
+  - cmake . -Bbuild -G "%GENERATOR%" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_SH=CMAKE_SH-NOTFOUND
 
 build_script:
   - cmake --build build --use-stderr --target all --
