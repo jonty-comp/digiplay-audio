@@ -1,5 +1,5 @@
 CXX=g++
-CXX_FLAGS=-Wall -I../src -ldpsaudio -L../build/lib/
+CXX_FLAGS=-Wall -DDEBUG=4 -I../src -ldpsaudio -L../build/lib/
 
 SRCS=$(wildcard *.cpp)
 OBJS=$(SRCS:%.cpp=%.o)
