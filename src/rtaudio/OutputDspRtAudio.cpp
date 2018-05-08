@@ -97,8 +97,8 @@ namespace Audio {
 
         AudioPacket *buffer = new AudioPacket(PACKET_SAMPLES);
         SAMPLEVAL *d = buffer->getData();
-        int size = buffer->getSize();
-        dbuf = new SAMPLEVAL[bufferFrames];
+        SAMPLE size = buffer->getSize();
+        dbuf = new SAMPLEVAL[bufferFrames * 2];
         ComponentAudio *C;
 
         while (!threadTestKill()) {
@@ -117,8 +117,8 @@ namespace Audio {
                 continue;
             }
 
-            unsigned int samples = 0;
-            while (samples < bufferFrames) {
+            SAMPLE samples = 0;
+            while (samples < bufferFrames * 2) {
                 C->getAudio(buffer);
                 memcpy(dbuf+samples, d, size);
                 samples = samples + size;
