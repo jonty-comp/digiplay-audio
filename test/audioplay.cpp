@@ -9,14 +9,14 @@ using namespace std;
 using namespace Audio;
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        cout << "Error: no file specified" << endl;
+    if (argc != 3) {
+        cout << "Usage: audioplay <file> <device>" << endl;
     }
 	// Create input sources and load
 	InputFile* filereader1 = new InputFile();
     ProcessMixer* mixer = new ProcessMixer();
 	// Create a DSP output
-	OutputDsp* player = new OutputDsp("rtaudio:Digiplay");
+	OutputDsp* player = new OutputDsp(argv[2]);
 	
 	// Connect everything up
     filereader1->load(string(argv[1]),0,441000000);
