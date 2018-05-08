@@ -28,14 +28,35 @@ namespace Audio {
     };
 
     OutputDspRtAudio::OutputDspRtAudio(string channel) {
+        // Determine the number of devices available
+        unsigned int devices = dac.getDeviceCount();
+        // Scan through devices for various capabilities
+        RtAudio::DeviceInfo info;
+        int device = -1;
+        for (unsigned int i=0; i<devices; i++) {
+            info = dac.getDeviceInfo(i);
+            if (info.probed == true) {
+                if (info.name == channel) device = i;
+            }
+        }
 
-        parameters.deviceId = dac.getDefaultOutputDevice();
+        if( device == -1 ) {
+            cout << "OutputDspRtAudio: Device " << channel.c_str() << " not found." << endl;
+            cout << "Possible devices: " << endl;
+            for (unsigned int i=0; i<devices; i++) {
+                info = dac.getDeviceInfo(i);
+                if (info.probed == true) {
+                    cout << i << ": " << info.name << endl;                    
+                }
+            }
+            throw 0;
+        }
+        parameters.deviceId = device;
         parameters.nChannels = 2;
         parameters.firstChannel = 0;
 
         unsigned int sampleRate = 44100;
         bufferFrames = PACKET_SAMPLES;
-
         try {
             dac.openStream( &parameters, NULL, RTAUDIO_SINT16,
                             sampleRate, &bufferFrames, callback, this);
