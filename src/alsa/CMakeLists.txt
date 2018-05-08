@@ -1,4 +1,4 @@
-find_package_handle_standard_args(ALSA DEFAULT_MSG ALSA_LIBRARY ALSA_INCLUDE_DIR)
+find_package(ALSA)
 
 if (NOT ALSA_FOUND)
 	message("ALSA Library not found - not building.")
