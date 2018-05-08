@@ -27,10 +27,24 @@ namespace Audio {
         }
     };
 
+    /**
+     * @brief Construct a new RtAudio Output
+     * 
+     * @param channel The device to connect to - if a / with an int is
+     *                appended then offset to that channel within the device
+     */
     OutputDspRtAudio::OutputDspRtAudio(string channel) {
-        // Determine the number of devices available
+        // Split off a channel offset if one is supplied
+        int o = channel.find("/");
+        int offset;
+        if (o < 0) {
+            offset = 0;
+        } else {
+            offset = atoi(channel.substr(o+1).c_str());
+            channel = channel.substr(0, o);
+        }
+
         unsigned int devices = dac.getDeviceCount();
-        // Scan through devices for various capabilities
         RtAudio::DeviceInfo info;
         int device = -1;
         for (unsigned int i=0; i<devices; i++) {
@@ -51,9 +65,10 @@ namespace Audio {
             }
             throw 0;
         }
+
         parameters.deviceId = device;
         parameters.nChannels = 2;
-        parameters.firstChannel = 0;
+        parameters.firstChannel = offset;
 
         unsigned int sampleRate = 44100;
         bufferFrames = PACKET_SAMPLES;
