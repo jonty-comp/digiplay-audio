@@ -120,7 +120,9 @@ namespace Audio {
             SAMPLE samples = 0;
             while (samples < bufferFrames * 2) {
                 C->getAudio(buffer);
-                memcpy(dbuf+samples, d, size);
+                for(SAMPLE n=0; n<size; n++) {
+                    dbuf[samples+n] = d[n];
+                }
                 samples = samples + size;
             }
             bufReady = 1;
@@ -148,7 +150,9 @@ namespace Audio {
         
         // Write interleaved audio data.
         if (bufReady && dbuf && nBufferFrames == bufferFrames) {
-            memcpy(buffer, dbuf, nBufferFrames);
+            for(SAMPLE n=0; n<bufferFrames * 2; n++) {
+                buffer[n] = dbuf[n];
+            }
             bufReady = 0;
         } else {
             for(SAMPLE n=0; n<nBufferFrames; n++) {
