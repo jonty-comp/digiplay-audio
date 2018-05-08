@@ -34,7 +34,7 @@ namespace Audio {
         parameters.firstChannel = 0;
 
         unsigned int sampleRate = 44100;
-        bufferFrames = AUDIO_BUFFER;
+        bufferFrames = PACKET_SAMPLES;
 
         try {
             dac.openStream( &parameters, NULL, RTAUDIO_SINT16,
@@ -49,6 +49,7 @@ namespace Audio {
         // Create buffer synchronisation object
         sync = new pthread_cond_t;
         pthread_cond_init(sync, NULL);
+        bufReady = 0;
     }
 
     OutputDspRtAudio::~OutputDspRtAudio() {
@@ -96,8 +97,8 @@ namespace Audio {
 
         AudioPacket *buffer = new AudioPacket(PACKET_SAMPLES);
         SAMPLEVAL *d = buffer->getData();
-        SAMPLE size = buffer->getSize();
-        dbuf = new SAMPLEVAL[bufferFrames*2];        
+        int size = buffer->getSize();
+        dbuf = new SAMPLEVAL[bufferFrames];
         ComponentAudio *C;
 
         while (!threadTestKill()) {
@@ -119,10 +120,8 @@ namespace Audio {
             unsigned int samples = 0;
             while (samples < bufferFrames) {
                 C->getAudio(buffer);
-                for(SAMPLE n=0; n<size; n++) {
-                    dbuf[samples] = d[n];
-                    samples++;
-                }
+                memcpy(dbuf+samples, d, size);
+                samples = samples + size;
             }
             bufReady = 1;
 
@@ -148,8 +147,13 @@ namespace Audio {
     int OutputDspRtAudio::process(SAMPLEVAL *buffer, unsigned int nBufferFrames) {
         
         // Write interleaved audio data.
-        if (dbuf && nBufferFrames == bufferFrames) {
+        if (bufReady && dbuf && nBufferFrames == bufferFrames) {
             memcpy(buffer, dbuf, nBufferFrames);
+            bufReady = 0;
+        } else {
+            for(SAMPLE n=0; n<nBufferFrames; n++) {
+                buffer[n] = 0;
+            }
         }
 
         pthread_cond_signal(sync);
