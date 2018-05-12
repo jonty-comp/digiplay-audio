@@ -6,7 +6,6 @@ set(AUDIOLIB_SOURCES    AudioPacket.cpp
                         Counter.cpp
                         CounterTrigger.cpp
                         Input.cpp
-                        InputFile.cpp
                         Output.cpp
                         OutputDsp.cpp
                         OutputFile.cpp
@@ -25,7 +24,6 @@ set(AUDIOLIB_HEADERS    AudioPacket.h
                         Counter.h
                         CounterTrigger.h
                         Input.h
-                        InputFile.h
                         Output.h
                         OutputDsp.h
                         OutputFile.h
@@ -39,7 +37,7 @@ set(AUDIOLIB_HEADERS    AudioPacket.h
 find_package (Threads)
 
 if (NOT CMAKE_USE_PTHREADS_INIT)
-	message(FATAL_ERROR "pthreads support is required for libdpsaudio.")
+    message(FATAL_ERROR "pthreads support is required for libdpsaudio.")
 endif (NOT CMAKE_USE_PTHREADS_INIT)
 
 if (WIN32)
@@ -53,6 +51,20 @@ if (NOT APPLE)
     endif (NOT CMAKE_DL_LIBS)
 endif (NOT APPLE)
 
+if (USE_FFMPEG)
+    add_subdirectory(ffmpeg)
+else (USE_FFMPEG)
+    set (AUDIOLIB_SOURCES 
+        ${AUDIOLIB_SOURCES}
+        InputFile.cpp
+    )
+
+    set (AUDIOLIB_HEADERS
+        ${AUDIOLIB_HEADERS}
+        InputFile.h
+    )
+endif (USE_FFMPEG)
+
 add_library(dpsaudio SHARED ${AUDIOLIB_SOURCES})
 target_link_libraries (dpsaudio ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(dpsaudio ${CMAKE_DL_LIBS})
@@ -65,24 +77,27 @@ install(TARGETS dpsaudio
     )
 install(FILES ${AUDIOLIB_HEADERS} DESTINATION include)
 
-if (ENABLE_RAW)
-	add_subdirectory(raw)
-endif (ENABLE_RAW)
+if (NOT USE_FFMPEG)
+    if (ENABLE_RAW)
+        add_subdirectory(raw)
+    endif (ENABLE_RAW)
+    if (ENABLE_FLAC)
+        add_subdirectory(flac)
+    endif (ENABLE_FLAC)
+    if (ENABLE_MP3)
+        add_subdirectory(mp3)
+    endif (ENABLE_MP3)
+endif (NOT USE_FFMPEG)
+
 if (ENABLE_OSS)
     add_subdirectory(oss)
 endif (ENABLE_OSS)
 if (ENABLE_ALSA)
     add_subdirectory(alsa)
 endif (ENABLE_ALSA)
-if (ENABLE_FLAC)
-    add_subdirectory(flac)
-endif (ENABLE_FLAC)
 if (ENABLE_JACK)
     add_subdirectory(jack)
 endif (ENABLE_JACK)
-if (ENABLE_MP3)
-    add_subdirectory(mp3)
-endif (ENABLE_MP3)
 if (ENABLE_PULSE)
     add_subdirectory(pulse)
 endif (ENABLE_PULSE)
