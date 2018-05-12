@@ -1,0 +1,38 @@
+# See http://www.appveyor.com/docs/appveyor-yml
+version: '{build}'
+
+environment:
+  matrix:
+    - COMPILER: mingw
+      GENERATOR: MinGW Makefiles
+      PLATFORM: x86
+      BUILD_TYPE: Debug
+
+    - COMPILER: mingw
+      GENERATOR: MinGW Makefiles
+      PLATFORM: x86
+      BUILD_TYPE: Release
+
+    - COMPILER: mingw-w64
+      GENERATOR: MinGW Makefiles
+      PLATFORM: x64
+      BUILD_TYPE: Debug
+
+    - COMPILER: mingw-w64
+      GENERATOR: MinGW Makefiles
+      PLATFORM: x64
+      BUILD_TYPE: Release
+
+cache: c:\tools\vcpkg\installed\
+
+install:
+  - if "%COMPILER%"=="mingw" set PATH=C:\MinGW\bin;%PATH%
+  - if "%COMPILER%"=="mingw-w64" set PATH=C:\MinGW\bin;%PATH%
+  - c:\tools\vcpkg\vcpkg install dlfcn-win32:%PLATFORM%-windows pthreads:%PLATFORM%-windows
+  - c:\tools\vcpkg\vcpkg integrate install
+
+before_build:
+  - cmake . -Bbuild -G "%GENERATOR%" -DVCPKG_TARGET_TRIPLET=%PLATFORM%-windows -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DCMAKE_SH=CMAKE_SH-NOTFOUND
+
+build_script:
+  - cmake --build build --use-stderr --target all --

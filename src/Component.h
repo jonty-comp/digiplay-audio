@@ -1,6 +1,10 @@
 #ifndef CLASS_COMPONENT
 #define CLASS_COMPONENT
 
+#ifdef _WIN32
+#define __attribute__(x)
+#endif
+
 #include <vector>
 using std::vector;
 

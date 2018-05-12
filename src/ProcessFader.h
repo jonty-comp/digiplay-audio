@@ -26,7 +26,7 @@ class Audio::ProcessFader : public Audio::Process {
         ~ProcessFader();
 
         /// Retrieve a packet of audio from the component connected to IN0
-        virtual void getAudio(AudioPacket* audioData);
+        virtual void getAudio(Audio::AudioPacket* audioData);
         /// Process a message received from another component
         virtual void receiveMessage(PORT inPort, MESSAGE message);
 		

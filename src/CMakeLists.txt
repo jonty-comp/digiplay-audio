@@ -38,6 +38,21 @@ set(AUDIOLIB_HEADERS    AudioPacket.h
 
 find_package (Threads)
 
+if (NOT CMAKE_USE_PTHREADS_INIT)
+	message(FATAL_ERROR "pthreads support is required for libdpsaudio.")
+endif (NOT CMAKE_USE_PTHREADS_INIT)
+
+if (WIN32)
+    find_package(dlfcn-win32 REQUIRED)
+    set(CMAKE_DL_LIBS dlfcn-win32::dl)
+endif (WIN32)
+
+if (NOT APPLE)
+    if (NOT CMAKE_DL_LIBS)
+        message(FATAL_ERROR "dlfcn support is required for libdpsaudio.")
+    endif (NOT CMAKE_DL_LIBS)
+endif (NOT APPLE)
+
 add_library(dpsaudio SHARED ${AUDIOLIB_SOURCES})
 target_link_libraries (dpsaudio ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(dpsaudio ${CMAKE_DL_LIBS})
@@ -50,7 +65,9 @@ install(TARGETS dpsaudio
     )
 install(FILES ${AUDIOLIB_HEADERS} DESTINATION include)
 
-add_subdirectory(raw)
+if (ENABLE_RAW)
+	add_subdirectory(raw)
+endif (ENABLE_RAW)
 if (ENABLE_OSS)
     add_subdirectory(oss)
 endif (ENABLE_OSS)

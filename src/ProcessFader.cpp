@@ -28,7 +28,7 @@ ProcessFader::~ProcessFader() {
  * specified by the node list.
  * @param   audioData       The AudioPacket to process.
  */ 
-void ProcessFader::getAudio(AudioPacket* audioData) {
+void ProcessFader::getAudio(Audio::AudioPacket* audioData) {
     dynamic_cast<ComponentAudio*>(connectedDevice(IN0))->getAudio(audioData);
 	SAMPLEVAL* mix = audioData->getData();
 	SAMPLE smpl;

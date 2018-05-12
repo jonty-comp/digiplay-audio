@@ -83,7 +83,7 @@ void Component::unpatch(PORT localPort) {
  * Adds a counter component to this components counter update list
  * @param C The counter component to be added to be updated during getAudio
  */
-void Component::addCounter(Counter* C) {
+void Component::addCounter(Audio::Counter* C) {
     for (unsigned int i = 0; i < _counters.size(); i++) {
         if (_counters.at(i) == C) {
             return;
@@ -97,7 +97,7 @@ void Component::addCounter(Counter* C) {
  * Removes a counter component from the list of components to be updated
  * @param C The counter component to be removed
  */
-void Component::removeCounter(Counter* C) {
+void Component::removeCounter(Audio::Counter* C) {
     for (unsigned int i = 0; i < _counters.size(); i++) {
         if (_counters.at(i) == C) {
             _counters.erase(_counters.begin() + i);
