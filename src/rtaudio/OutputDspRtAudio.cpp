@@ -11,11 +11,15 @@
 #include <unistd.h>
 using namespace std;
 
+<<<<<<< HEAD
 #ifdef ALTERNATE_RTAUDIO_INCLUDE_DIR
     #include "RtAudio.h"
 #else
     #include "rtaudio/RtAudio.h"
 #endif
+=======
+#include "rtaudio/RtAudio.h"
+>>>>>>> 199b19c9f237e6bec9bdeb243ffccc7a6d66b3a4
 
 #include "OutputDspRtAudio.h"
 
