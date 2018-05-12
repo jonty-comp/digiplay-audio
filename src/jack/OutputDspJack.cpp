@@ -118,11 +118,6 @@ namespace Audio {
         delete buffer;
     }
 
-
-    /**
-     * Opens and initialises an output DSP device.
-     * @param   device      The DSP device to initialise.
-     */
     int OutputDspJack::jack_callback(jack_nframes_t nframes, void *arg) {
         OutputDspJack *me = (OutputDspJack *)arg;
         return me->process(nframes);

@@ -17,10 +17,11 @@ addons:
     - libjack-dev
     - libmpg123-dev
     - libpulse-dev
+    - librtaudio-dev
 
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install flac jack mpg123 pulseaudio; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install flac jack mpg123 pulseaudio rt-audio; fi
   - mkdir build && cd build
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DENABLE_FLAC=no ..; else cmake ..; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -DENABLE_FLAC=no ..; else cmake -DENABLE_RTAUDIO=no ..; fi
 
 script: make

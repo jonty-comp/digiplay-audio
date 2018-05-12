@@ -8,20 +8,10 @@ environment:
       PLATFORM: x86
       BUILD_TYPE: Debug
 
-    - COMPILER: mingw
-      GENERATOR: MinGW Makefiles
-      PLATFORM: x86
-      BUILD_TYPE: Release
-
     - COMPILER: mingw-w64
       GENERATOR: MinGW Makefiles
       PLATFORM: x64
       BUILD_TYPE: Debug
-
-    - COMPILER: mingw-w64
-      GENERATOR: MinGW Makefiles
-      PLATFORM: x64
-      BUILD_TYPE: Release
 
 cache: c:\tools\vcpkg\installed\
 
