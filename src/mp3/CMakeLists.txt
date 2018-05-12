@@ -16,6 +16,7 @@ if (MPG123_FOUND)
 	set(AUDIOLIB_MP3_SOURCES InputMp3.cpp)
 	add_library(dpsaudio-mp3 SHARED ${AUDIOLIB_MP3_SOURCES})
 	target_link_libraries(dpsaudio-mp3 ${MPG123_LIBRARY})
+	target_link_libraries(dpsaudio-mp3 dpsaudio)
 	set_target_properties(dpsaudio-mp3 PROPERTIES VERSION ${VERSION})
 	install(TARGETS dpsaudio-mp3
 		RUNTIME DESTINATION bin OPTIONAL

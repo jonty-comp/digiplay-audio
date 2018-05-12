@@ -8,6 +8,7 @@ if (ALSA_FOUND)
 	set(AUDIOLIB_ALSA_SOURCES OutputDspAlsa.cpp)
 	add_library(dpsaudio-alsa SHARED ${AUDIOLIB_ALSA_SOURCES})
 	target_link_libraries(dpsaudio-alsa ${ALSA_LIBRARY})
+	target_link_libraries(dpsaudio-alsa dpsaudio)
 	set_target_properties(dpsaudio-alsa PROPERTIES VERSION ${VERSION})
 	install(TARGETS dpsaudio-alsa
 		RUNTIME DESTINATION bin OPTIONAL

@@ -12,6 +12,7 @@ if (Pulse_FOUND)
 	set(AUDIOLIB_PULSE_SOURCES OutputDspPulseAudio.cpp)
 	add_library(dpsaudio-pulse SHARED ${AUDIOLIB_PULSE_SOURCES})
 	target_link_libraries(dpsaudio-pulse ${PULSE_LIBRARY})
+	target_link_libraries(dpsaudio-pulse dpsaudio)
 	set_target_properties(dpsaudio-pulse PROPERTIES VERSION ${VERSION})
 	install(TARGETS dpsaudio-pulse
 		RUNTIME DESTINATION bin OPTIONAL

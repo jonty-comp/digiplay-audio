@@ -13,6 +13,7 @@ if (FLACPP_FOUND)
 	set(AUDIOLIB_FLAC_SOURCES InputFlac.cpp)
 	add_library(dpsaudio-flac SHARED ${AUDIOLIB_FLAC_SOURCES})
 	target_link_libraries(dpsaudio-flac ${FLACPP_LIBRARY})
+	target_link_libraries(dpsaudio-flac dpsaudio)
 	set_target_properties(dpsaudio-flac PROPERTIES VERSION ${VERSION})
 	install(TARGETS dpsaudio-flac
 		RUNTIME DESTINATION bin OPTIONAL

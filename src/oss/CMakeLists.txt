@@ -9,6 +9,7 @@ endif (NOT OSS_FOUND)
 if (OSS_FOUND)
 	set(AUDIOLIB_OSS_SOURCES OutputDspOss.cpp)
 	add_library(dpsaudio-oss SHARED ${AUDIOLIB_OSS_SOURCES})
+	target_link_libraries(dpsaudio-oss dpsaudio)
 	set_target_properties(dpsaudio-oss PROPERTIES VERSION ${VERSION})
 	install(TARGETS dpsaudio-oss
 		RUNTIME DESTINATION bin OPTIONAL
