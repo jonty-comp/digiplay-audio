@@ -3,7 +3,7 @@
 using namespace std;
 
 #include "Audio.h"
-#include "InputFile.h"
+#include "ffmpeg/InputFile.h"
 #include "OutputDsp.h"
 #include "ProcessMixer.h"
 using namespace Audio;

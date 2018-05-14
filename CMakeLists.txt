@@ -25,6 +25,11 @@ add_definitions(-DVERSION="\\"${VERSION}\\"")
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 option(USE_FFMPEG "Experimental ffmpeg input support." OFF)
+if (USE_FFMPEG)
+  set(ENABLE_RAW OFF)
+  set(ENABLE_FLAC OFF)
+  set(ENABLE_MP3 OFF)
+endif (USE_FFMPEG)
 
 option(ENABLE_RAW "Enable PCM audio support." ON)
 option(ENABLE_FLAC "Enable FLAC audio support." ON)

@@ -68,6 +68,9 @@ endif (USE_FFMPEG)
 add_library(dpsaudio SHARED ${AUDIOLIB_SOURCES})
 target_link_libraries (dpsaudio ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(dpsaudio ${CMAKE_DL_LIBS})
+if (FFMPEG_FOUND)
+    target_link_libraries(dpsaudio ${FFMPEG_LIBRARIES})
+endif (FFMPEG_FOUND)
 
 set_target_properties(dpsaudio PROPERTIES VERSION ${VERSION})
 install(TARGETS dpsaudio
@@ -76,18 +79,6 @@ install(TARGETS dpsaudio
     LIBRARY DESTINATION lib OPTIONAL
     )
 install(FILES ${AUDIOLIB_HEADERS} DESTINATION include)
-
-if (NOT USE_FFMPEG)
-    if (ENABLE_RAW)
-        add_subdirectory(raw)
-    endif (ENABLE_RAW)
-    if (ENABLE_FLAC)
-        add_subdirectory(flac)
-    endif (ENABLE_FLAC)
-    if (ENABLE_MP3)
-        add_subdirectory(mp3)
-    endif (ENABLE_MP3)
-endif (NOT USE_FFMPEG)
 
 if (ENABLE_OSS)
     add_subdirectory(oss)

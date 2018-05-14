@@ -85,6 +85,9 @@ else (FFMPEG_LIBRARIES AND FFMPEG_INCLUDE_DIR)
             ${CMAKE_CURRENT_SOURCE_DIR}/InputFile.h
             PARENT_SCOPE
         )
+
+        set (FFMPEG_LIBRARIES ${FFMPEG_LIBRARIES} PARENT_SCOPE)
+        set (FFMPEG_FOUND TRUE PARENT_SCOPE)
     else (FFMPEG_FOUND)
         message(FATAL_ERROR "Could not find libavcodec or libavformat or libavutil")
     endif (FFMPEG_FOUND)

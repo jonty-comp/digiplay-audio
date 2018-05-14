@@ -2,12 +2,6 @@
 #include <algorithm>
 #include <unistd.h>
 
-#include <libavutil/opt.h>
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libswresample/swresample.h>
-
-
 #include "Counter.h"
 #include "CircularCache.h"
 #include "InputFile.h"
@@ -38,8 +32,7 @@ InputFile::InputFile(unsigned int cacheSize) :
  */
 InputFile::~InputFile() {
     av_frame_free(&frame);
-    swr_free(&swr);
-    avcodec_close(codec);
+    // avcodec_close(codec);
     avformat_free_context(format);
 }
 
@@ -74,7 +67,7 @@ void InputFile::load(string filename, long start_smpl, long end_smpl) {
     // Find the index of the first audio stream
     int stream_index =- 1;
     for (uint i=0; i<format->nb_streams; i++) {
-        if (format->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (format->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
             stream_index = i;
             break;
         }
@@ -86,33 +79,20 @@ void InputFile::load(string filename, long start_smpl, long end_smpl) {
     stream = format->streams[stream_index];
  
     // find & open codec
-    codec = stream->codec;
-    if (avcodec_open2(codec, avcodec_find_decoder(codec->codec_id), NULL) < 0) {
+    AVCodec* c = avcodec_find_decoder(stream->codecpar->codec_id);
+    codec = avcodec_alloc_context3(c);
+    if (avcodec_open2(codec, c, NULL) < 0) {
         fprintf(stderr, "Failed to open decoder for stream #%u in file '%s'\n", stream_index, filename.c_str());
         throw -1;
     }
- 
-    // prepare resampler
-    swr = swr_alloc();
-    av_opt_set_int(swr, "in_channel_count",  codec->channels, 0);
-    av_opt_set_int(swr, "out_channel_count", 1, 0);
-    av_opt_set_int(swr, "in_channel_layout",  codec->channel_layout, 0);
-    av_opt_set_int(swr, "out_channel_layout", AV_CH_LAYOUT_MONO, 0);
-    av_opt_set_int(swr, "in_sample_rate", codec->sample_rate, 0);
-    av_opt_set_int(swr, "out_sample_rate", sample_rate, 0);
-    av_opt_set_sample_fmt(swr, "in_sample_fmt",  codec->sample_fmt, 0);
-    av_opt_set_sample_fmt(swr, "out_sample_fmt", AV_SAMPLE_FMT_DBL,  0);
-    swr_init(swr);
-    if (!swr_is_initialized(swr)) {
-        fprintf(stderr, "Resampler has not been properly initialized\n");
-        throw -1;
-    }
+    data_size = av_get_bytes_per_sample(codec->sample_fmt);
 
     // Initialise position variables, counters and reset cache
     f_filename = filename;
-    f_start_byte = start_smpl * 4;
-    f_end_byte = end_smpl * 4;
-    f_length_byte = f_end_byte - f_start_byte*4; //f_end_byte - f_start_byte;
+    f_start_byte = start_smpl * data_size;
+    f_end_byte = end_smpl * data_size;
+    if (stream->duration * data_size < (off_t)f_end_byte || f_end_byte==0) f_end_byte = stream->duration * data_size;
+    f_length_byte = f_end_byte - f_start_byte * data_size;
 
     // If we're just resetting after a stop, try to seek to beginning of cache
     try {
@@ -130,7 +110,7 @@ void InputFile::load(string filename, long start_smpl, long end_smpl) {
     f_pos_byte = f_start_byte;
     
     updateCounters(0);
-    updateTotals(f_length_byte / 4);
+    updateTotals(f_length_byte / data_size);
 
     try {
         if (!allCached) startCaching();
@@ -148,8 +128,37 @@ bool InputFile::isLoaded() {
     return false;
 }
 
+
+/**
+ * Processes messages received from other audio components.
+ * @param   inPort      Port on which message is received
+ * @param   message     The message received
+ */
+void InputFile::receiveMessage(PORT inPort, MESSAGE message) {
+
+}
+
+
+/**
+ * Perform tasks when a component connects to this component
+ * @param   localPort   Port to which another component connects.
+ */
+void InputFile::onPatch(PORT localPort) {
+
+}
+
+
+/**
+ * Perform tasks when a component disconnects from this component
+ * @param   localPort   Port on which another component has disconnected
+ */
+void InputFile::onUnpatch(PORT localPort) {
+
+}
+
 void InputFile::threadExecute() {
     while (!threadTestKill()) {
+        bool atEnd = false;
 
         // Wait until told to start caching a file
         if (!threadReceive(START)) {
@@ -176,13 +185,14 @@ void InputFile::threadExecute() {
             // TODO implement seek
             if (threadReceive(SEEK)) {
                 mCache->clear();
-                
+                // av_seek_summat
+                atEnd = false;
             }
 
-            // Sleep if cache is full
-            // TODO figure out how to tell when the cache is full
-            if (mCache->free() < 1 * 2) {
-                usleep(10000);
+            // We pause caching when free cache drops to below twice READ_PACKET,
+            // or we have reached the end of file
+            if (mCache->free() < 2*data_size) {
+                usleep(100);
                 continue;
             }
 
@@ -194,28 +204,41 @@ void InputFile::threadExecute() {
                 fprintf(stderr, "Error allocating the frame\n");
                 throw -1;
             }
-        
-            if(av_read_frame(format, &packet) != 0) {
-                // EOF or some other error
-                usleep(10000);
-            }
-            int gotFrame;
-            if (avcodec_decode_audio4(codec, frame, &gotFrame, &packet) < 0) {
-                break;
-            }
-            if (!gotFrame) {
+
+            int ret;
+
+            av_read_frame(format, &packet);
+            
+            ret = avcodec_send_packet(codec, &packet);
+            if (ret == AVERROR_EOF) {
+                atEnd = true;
                 continue;
+            } else if (ret < 0) {
+                fprintf(stderr, "Error submitting the packet to the decoder\n");
+                throw -1;
             }
-            // resample frames
-            char* buffer;
-            av_samples_alloc((uint8_t**) &buffer, NULL, 1, frame->nb_samples, AV_SAMPLE_FMT_DBL, 0);
-            int frame_count = swr_convert(swr, (uint8_t**) &buffer, frame->nb_samples, (const uint8_t**) frame->data, frame->nb_samples);
 
-            mCache->write(frame_count, buffer);
+
+            // read all the output frames (in general there may be any number of them)
+            while (ret >= 0) {
+                ret = avcodec_receive_frame(codec, frame);
+
+                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                    atEnd = true;
+                    continue;
+                }
+                else if (ret < 0) {
+                    fprintf(stderr, "Error during decoding\n");
+                    exit(1);
+                }                
+
+                for (int i = 0; i < frame->nb_samples; i++)
+                    for (int ch = 0; ch < codec->channels; ch++)
+                        mCache->write(data_size, (char*) frame->data[ch]);
+
+            }
+            cout << mCache->free() << endl;
         }
-
-        // Close the file and delete
-        loaded = false;
 
         // Set cache state to inactive
         cacheStateLock.lock();
