@@ -24,6 +24,7 @@ InputFile::InputFile(unsigned int cacheSize) :
     // initialize all muxers, demuxers and protocols for libavformat
     // (does nothing if called twice during the course of one program execution)
     av_register_all();
+    av_log_set_level(AV_LOG_DEBUG);
 }
 
 
@@ -32,7 +33,7 @@ InputFile::InputFile(unsigned int cacheSize) :
  */
 InputFile::~InputFile() {
     av_frame_free(&frame);
-    // avcodec_close(codec);
+    avcodec_free_context(&codec);
     avformat_free_context(format);
 }
 
@@ -185,13 +186,14 @@ void InputFile::threadExecute() {
             // TODO implement seek
             if (threadReceive(SEEK)) {
                 mCache->clear();
+                f_pos_byte = f_seek_byte;
                 // av_seek_summat
                 atEnd = false;
             }
 
-            // We pause caching when free cache drops to below twice READ_PACKET,
+            // We pause caching when free cache drops to below twice the frame size,
             // or we have reached the end of file
-            if (mCache->free() < 2*data_size) {
+            if (mCache->free() < 8192*2) {
                 usleep(100);
                 continue;
             }
@@ -207,37 +209,41 @@ void InputFile::threadExecute() {
 
             int ret;
 
-            av_read_frame(format, &packet);
-            
-            ret = avcodec_send_packet(codec, &packet);
+            ret = av_read_frame(format, &packet);
             if (ret == AVERROR_EOF) {
                 atEnd = true;
                 continue;
             } else if (ret < 0) {
+                fprintf(stderr, "Could not read frame\n");
+                throw -1;
+            }
+            
+            ret = avcodec_send_packet(codec, &packet);
+            if (ret < 0) {
                 fprintf(stderr, "Error submitting the packet to the decoder\n");
                 throw -1;
             }
 
-
-            // read all the output frames (in general there may be any number of them)
-            while (ret >= 0) {
-                ret = avcodec_receive_frame(codec, frame);
-
-                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-                    atEnd = true;
-                    continue;
-                }
-                else if (ret < 0) {
-                    fprintf(stderr, "Error during decoding\n");
-                    exit(1);
-                }                
-
-                for (int i = 0; i < frame->nb_samples; i++)
-                    for (int ch = 0; ch < codec->channels; ch++)
-                        mCache->write(data_size, (char*) frame->data[ch]);
-
+            ret = avcodec_receive_frame(codec, frame);
+            if (ret == AVERROR(EAGAIN)) {
+                // more data required to decode the frame
+                continue;
+            } else if (ret == AVERROR_EOF) {
+                // no more data in file
+                atEnd = true;
+                continue;
+            } else if (ret < 0) {
+                fprintf(stderr, "Could not decode frame\n");
+                throw -1;
             }
-            cout << mCache->free() << endl;
+
+            mCache->write(frame->linesize[0], (char* ) frame->data);
+
+            if (mCache->size() - mCache->free() > preCacheSize) {
+                usleep(100);
+            }
+
+            av_packet_unref(&packet);
         }
 
         // Set cache state to inactive
